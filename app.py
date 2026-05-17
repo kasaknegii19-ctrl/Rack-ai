@@ -4,12 +4,12 @@ import os
 
 app = Flask(__name__)
 
-GEMINI_API_KEY = "AIzaSyBleuaCW8fM6oWKB8b-Eg-6FF8eF5K70fg"
+GEMINI_API_KEY = "YAHAN_APNI_NAYE_GEMINI_KEY_DALO"
 ACCESS_KEYS = ["rack2714851332"]
 CONTACT = "@racksun19"
 
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-pro")
 
 SYSTEM_PROMPT = """You are an extremely intelligent and helpful AI assistant.
 You can help with:
@@ -32,7 +32,7 @@ def home():
     return jsonify({"status": "online", "contact": CONTACT})
 
 
-@app.route("/api/mistral")
+@app.route("/api/rack")
 def chat():
     key = request.args.get("key", "")
     message = request.args.get("message", "")

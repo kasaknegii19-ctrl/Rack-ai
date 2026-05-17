@@ -1,15 +1,13 @@
 from flask import Flask, request, jsonify
-import google.generativeai as genai
+import requests
 import os
 
 app = Flask(__name__)
 
-GEMINI_API_KEY = "AIzaSyBleuaCW8fM6oWKB8b-Eg-6FF8eF5K70fg"
+GEMINI_API_KEY = "YAHAN_APNI_NAYE_GEMINI_KEY_DALO"
 ACCESS_KEYS = ["rack2714851332"]
 CONTACT = "@racksun19"
-
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-pro")
+OWNER = "@kihoerack"
 
 SYSTEM_PROMPT = """You are an extremely intelligent and helpful AI assistant.
 You can help with:
@@ -29,7 +27,12 @@ Match the language of the user automatically."""
 
 @app.route("/")
 def home():
-    return jsonify({"status": "online", "contact": CONTACT})
+    return jsonify({
+        "status": "online",
+        "owner": OWNER,
+        "contact": CONTACT,
+        "usage": "/api/rack?key=YOUR_KEY&message=YOUR_QUESTION"
+    })
 
 
 @app.route("/api/rack")
@@ -38,17 +41,29 @@ def chat():
     message = request.args.get("message", "")
 
     if key not in ACCESS_KEYS:
-        return jsonify({"error": "Invalid API key", "contact": CONTACT}), 403
+        return jsonify({"error": "Invalid API key", "owner": OWNER, "contact": CONTACT}), 403
 
     if not message:
-        return jsonify({"error": "message parameter is required", "contact": CONTACT}), 400
+        return jsonify({"error": "message parameter is required", "owner": OWNER, "contact": CONTACT}), 400
 
     try:
-        full_prompt = SYSTEM_PROMPT + "\n\nUser: " + message
-        response = model.generate_content(full_prompt)
-        return jsonify({"response": response.text})
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": SYSTEM_PROMPT + "\n\nUser: " + message}
+                    ]
+                }
+            ]
+        }
+        res = requests.post(url, json=payload, timeout=30)
+        res.raise_for_status()
+        data = res.json()
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        return jsonify({"response": text, "owner": OWNER})
     except Exception as e:
-        return jsonify({"error": str(e), "contact": CONTACT}), 500
+        return jsonify({"error": str(e), "owner": OWNER, "contact": CONTACT}), 500
 
 
 if __name__ == "__main__":

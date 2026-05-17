@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-GEMINI_API_KEY = "AIzaSyBekjecs6vImnQgp1VoElGlJqgxpTJConA"
+GROQ_API_KEY = "YAHAN_APNA_NAYA_GROQ_KEY_DALO"
 ACCESS_KEYS = ["rack2714851332"]
 CONTACT = "@racksun19"
 OWNER = "@kihoerack"
@@ -47,20 +47,21 @@ def chat():
         return jsonify({"error": "message parameter is required", "owner": OWNER, "contact": CONTACT}), 400
 
     try:
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY
+        headers = {
+            "Authorization": "Bearer " + GROQ_API_KEY,
+            "Content-Type": "application/json"
+        }
         payload = {
-            "contents": [
-                {
-                    "parts": [
-                        {"text": SYSTEM_PROMPT + "\n\nUser: " + message}
-                    ]
-                }
+            "model": "llama3-70b-8192",
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": message}
             ]
         }
-        res = requests.post(url, json=payload, timeout=30)
+        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=30)
         res.raise_for_status()
         data = res.json()
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        text = data["choices"][0]["message"]["content"]
         return jsonify({"response": text, "owner": OWNER})
     except Exception as e:
         return jsonify({"error": str(e), "owner": OWNER, "contact": CONTACT}), 500

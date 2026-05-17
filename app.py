@@ -3,8 +3,8 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-GEMINI_API_KEY = "YAHAN_APNI_NAYE_GEMINI_KEY_DALO"
-ACCESS_KEYS = ["apni_secret_key_yahan_likho"]
+GEMINI_API_KEY = "AIzaSyBleuaCW8fM6oWKB8b-Eg-6FF8eF5K70fg"
+ACCESS_KEYS = ["rack2714851332"]
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")

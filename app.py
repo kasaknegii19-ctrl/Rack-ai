@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-GEMINI_API_KEY = "AIzaSyBleuaCW8fM6oWKB8b-Eg-6FF8eF5K70fg"
+GEMINI_API_KEY = "AIzaSyBekjecs6vImnQgp1VoElGlJqgxpTJConA"
 ACCESS_KEYS = ["rack2714851332"]
 CONTACT = "@racksun19"
 OWNER = "@kihoerack"

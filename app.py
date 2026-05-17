@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
 import google.generativeai as genai
+import os
 
 app = Flask(__name__)
 
-GEMINI_API_KEY = "AIzaSyBleuaCW8fM6oWKB8b-Eg-6FF8eF5K70fg"
+GEMINI_API_KEY = "YAHAN_APNI_NAYE_GEMINI_KEY_DALO"
 ACCESS_KEYS = ["rack2714851332"]
+CONTACT = "@racksun19"
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -27,35 +29,28 @@ Match the language of the user automatically."""
 
 @app.route("/")
 def home():
-    return jsonify({
-        "status": "online",
-        "message": "AI API is running",
-        "usage": "/api?key=YOUR_KEY&q=YOUR_QUESTION"
-    })
+    return jsonify({"status": "online", "contact": CONTACT})
 
 
-@app.route("/api")
+@app.route("/api/mistral")
 def chat():
     key = request.args.get("key", "")
-    q = request.args.get("q", "")
+    message = request.args.get("message", "")
 
     if key not in ACCESS_KEYS:
-        return jsonify({"success": False, "error": "Invalid API key"}), 403
+        return jsonify({"error": "Invalid API key", "contact": CONTACT}), 403
 
-    if not q:
-        return jsonify({"success": False, "error": "Query parameter 'q' is required"}), 400
+    if not message:
+        return jsonify({"error": "message parameter is required", "contact": CONTACT}), 400
 
     try:
-        full_prompt = SYSTEM_PROMPT + "\n\nUser: " + q
+        full_prompt = SYSTEM_PROMPT + "\n\nUser: " + message
         response = model.generate_content(full_prompt)
-        return jsonify({
-            "success": True,
-            "query": q,
-            "response": response.text
-        })
+        return jsonify({"response": response.text})
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"error": str(e), "contact": CONTACT}), 500
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
